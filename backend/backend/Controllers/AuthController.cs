@@ -105,13 +105,15 @@ namespace backend.Controllers
 
                 var jwtString = new JwtSecurityTokenHandler().WriteToken(token);
 
-                // 4. Vraćamo Token i osnovne podatke
+                // 4. Ako je sve OK, vraćamo podatke korisnika
                 return Ok(new
                 {
                     message = "Uspešna prijava!",
-                    token = jwtString, // OVO SADA REAKTU TREBA
+                    token = jwtString,
                     userId = user.Id,
                     firstName = user.FirstName,
+                    lastName = user.LastName, // DODATO
+                    email = user.Email,       // DODATO
                     role = user.Role
                 });
             }
@@ -147,6 +149,83 @@ namespace backend.Controllers
                 message = "Uspesno ste pristupili zasticenim podacima!",
                 reportData = $"Ovo je tajni izveštaj. Vaš mejl je {emailKorisnikaKojiPita}, a vaša uloga je {rolaKorisnika}."
             });
+        }
+
+        // Klasa za primanje novih podataka
+        public class UpdateProfileRequest
+        {
+            public string FirstName { get; set; } = null!;
+            public string LastName { get; set; } = null!;
+        }
+
+        // METODA ZA AZURIRANJE PROFILA
+        [HttpPut("update-profile")]
+        [Microsoft.AspNetCore.Authorization.Authorize] // Samo ulogovani mogu da menjaju SVOJ profil
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        {
+            try
+            {
+                // Vadimo ID trenutno ulogovanog korisnika iz JWT tokena!
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId == null) return Unauthorized(new { message = "Korisnik nije prepoznat." });
+
+                // Tražimo MongoDB da izmeni samo Ime i Prezime
+                var update = Builders<User>.Update
+                    .Set(u => u.FirstName, request.FirstName)
+                    .Set(u => u.LastName, request.LastName);
+
+                await _usersCollection.UpdateOneAsync(u => u.Id == userId, update);
+
+                return Ok(new { message = "Profil uspešno ažuriran!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Greška pri ažuriranju.", error = ex.Message });
+            }
+        }
+
+
+        // Klasa za primanje podataka o lozinki
+        public class ChangePasswordRequest
+        {
+            public string OldPassword { get; set; } = null!;
+            public string NewPassword { get; set; } = null!;
+        }
+
+        // METODA ZA PROMENU LOZINKE
+        [HttpPut("change-password")]
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            try
+            {
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null) return Unauthorized(new { message = "Niste prijavljeni." });
+
+                // 1. Nadji korisnika u bazi
+                var user = await _usersCollection.Find(u => u.Id == userId).FirstOrDefaultAsync();
+                if (user == null) return NotFound(new { message = "Korisnik nije pronadjen." });
+
+                // 2. Proveri da li se stara lozinka poklapa sa onom u bazi
+                if (!BCrypt.Net.BCrypt.Verify(request.OldPassword, user.Password))
+                {
+                    return BadRequest(new { message = "Stara lozinka nije tačna!" });
+                }
+
+                // 3. Heširaj novu lozinku
+                var newHashedPassword = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+                // 4. Ažuriraj samo polje Password u bazi
+                var update = Builders<User>.Update.Set(u => u.Password, newHashedPassword);
+                await _usersCollection.UpdateOneAsync(u => u.Id == userId, update);
+
+                return Ok(new { message = "Lozinka je uspešno promenjena!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Greška pri promeni lozinke.", error = ex.Message });
+            }
         }
 
 
