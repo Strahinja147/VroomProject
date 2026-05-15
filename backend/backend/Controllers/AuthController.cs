@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using backend.DTOs;
 
 namespace backend.Controllers
 {
@@ -49,16 +50,9 @@ namespace backend.Controllers
             }
         }
 
-        // Klasa koja predstavlja ono što nam React šalje (samo mejl i šifru)
-        public class LoginRequest
-        {
-            public string Email { get; set; } = null!;
-            public string Password { get; set; } = null!;
-        }
-
         // METODA ZA PRIJAVU (LOGIN)
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginInfo)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginInfo)
         {
             try
             {
@@ -123,8 +117,6 @@ namespace backend.Controllers
             }
         }
 
-
-
         // METODA ZA PREGLED SVIH KORISNIKA (da proveriš da li radi)
         [HttpGet("users")]
         public async Task<ActionResult<List<User>>> GetUsers()
@@ -151,17 +143,10 @@ namespace backend.Controllers
             });
         }
 
-        // Klasa za primanje novih podataka
-        public class UpdateProfileRequest
-        {
-            public string FirstName { get; set; } = null!;
-            public string LastName { get; set; } = null!;
-        }
-
         // METODA ZA AZURIRANJE PROFILA
         [HttpPut("update-profile")]
         [Microsoft.AspNetCore.Authorization.Authorize] // Samo ulogovani mogu da menjaju SVOJ profil
-        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequestDTO request)
         {
             try
             {
@@ -185,18 +170,10 @@ namespace backend.Controllers
             }
         }
 
-
-        // Klasa za primanje podataka o lozinki
-        public class ChangePasswordRequest
-        {
-            public string OldPassword { get; set; } = null!;
-            public string NewPassword { get; set; } = null!;
-        }
-
         // METODA ZA PROMENU LOZINKE
         [HttpPut("change-password")]
         [Microsoft.AspNetCore.Authorization.Authorize]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDTO request)
         {
             try
             {
@@ -227,8 +204,6 @@ namespace backend.Controllers
                 return StatusCode(500, new { message = "Greška pri promeni lozinke.", error = ex.Message });
             }
         }
-
-
 
     }
 }
