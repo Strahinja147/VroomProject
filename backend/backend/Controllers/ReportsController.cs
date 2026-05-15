@@ -12,11 +12,13 @@ namespace backend.Controllers
     public class ReportsController : ControllerBase
     {
         private readonly IMongoCollection<User> _usersCollection;
+        private readonly IMongoCollection<Vehicle> _vehiclesCollection;
         // Ovde ćemo kasnije dodati _vehiclesCollection i _reservationsCollection kada ih kolege naprave
 
         public ReportsController(IMongoDatabase database)
         {
             _usersCollection = database.GetCollection<User>("Users");
+            _vehiclesCollection = database.GetCollection<Vehicle>("Vehicles");
         }
 
         [HttpGet("dashboard")]
@@ -26,13 +28,13 @@ namespace backend.Controllers
             {
                 // Brojimo koliko imamo korisnika u bazi
                 var usersCount = await _usersCollection.CountDocumentsAsync(_ => true);
-
+                var vehiclesCount = await _vehiclesCollection.CountDocumentsAsync(_ => true);
                 // Za vozila i rezervacije za sada stavljamo 0
                 // Kada kolege naprave kolekcije, ovde će pisati: await _vehiclesCollection.CountDocumentsAsync(...)
                 var report = new DashboardReport
                 {
                     TotalUsers = (int)usersCount,
-                    TotalVehicles = 0,
+                    TotalVehicles = (int)vehiclesCount,
                     TotalReservations = 0
                 };
 

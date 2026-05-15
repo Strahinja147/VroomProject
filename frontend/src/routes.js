@@ -5,6 +5,9 @@ import Register from "views/examples/Register.js";
 import Login from "views/examples/Login.js";
 import Tables from "views/examples/Tables.js";
 import Icons from "views/examples/Icons.js";
+import Vehicles from "views/examples/Vehicles.js";
+import AddVehicle from "views/examples/AddVehicle.js";
+import EditVehicle from "views/examples/EditVehicle.js";
 
 var routes = [
   {
@@ -55,6 +58,26 @@ var routes = [
     icon: "ni ni-circle-08 text-pink",
     component: <Register />,
     layout: "/auth",
+  },
+  {
+    path: "/vehicles",
+    name: "Vozni Park",
+    icon: "ni ni-delivery-fast text-info",
+    component: <Vehicles />,
+    layout: "/admin",
+  },
+  {
+    path: "/add-vehicle",
+    name: "Dodaj Vozilo",
+    icon: "ni ni-fat-add text-orange",
+    component: <AddVehicle />,
+    layout: "/admin",
+  },
+  {
+    path: "/edit-vehicle/:id",
+    name: "Izmena Vozila",
+    component: <EditVehicle />,
+    layout: "/admin",
   },
 ];
 export default routes;
