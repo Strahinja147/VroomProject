@@ -9,6 +9,11 @@ import Vehicles from "views/examples/Vehicles.js";
 import AddVehicle from "views/examples/AddVehicle.js";
 import EditVehicle from "views/examples/EditVehicle.js";
 
+// DODATO ZA OSOBU C (Rezervacije)
+import MyReservations from "views/examples/MyReservations.js";
+import AvailableVehicles from "views/examples/AvailableVehicles.js";
+import AllReservations from "views/examples/AllReservations.js";
+
 var routes = [
   {
     path: "/index",
@@ -17,47 +22,30 @@ var routes = [
     component: <Index />,
     layout: "/admin",
   },
+  
+  // --- VROOM KLIJENT RUTE ---
   {
-    path: "/icons",
-    name: "Icons",
-    icon: "ni ni-planet text-blue",
-    component: <Icons />,
+    path: "/ponuda",
+    name: "Ponuda Vozila",
+    icon: "ni ni-active-40 text-success",
+    component: <AvailableVehicles />,
     layout: "/admin",
   },
   {
-    path: "/maps",
-    name: "Maps",
-    icon: "ni ni-pin-3 text-orange",
-    component: <Maps />,
+    path: "/moje-rezervacije",
+    name: "Moje Rezervacije",
+    icon: "ni ni-calendar-grid-58 text-info",
+    component: <MyReservations />,
     layout: "/admin",
   },
+
+  // --- VROOM ADMIN RUTE ---
   {
-    path: "/user-profile",
-    name: "User Profile",
-    icon: "ni ni-single-02 text-yellow",
-    component: <Profile />,
+    path: "/sve-rezervacije",
+    name: "Sve Rezervacije",
+    icon: "ni ni-collection text-red",
+    component: <AllReservations />,
     layout: "/admin",
-  },
-  {
-    path: "/tables",
-    name: "Tables",
-    icon: "ni ni-bullet-list-67 text-red",
-    component: <Tables />,
-    layout: "/admin",
-  },
-  {
-    path: "/login",
-    name: "Login",
-    icon: "ni ni-key-25 text-info",
-    component: <Login />,
-    layout: "/auth",
-  },
-  {
-    path: "/register",
-    name: "Register",
-    icon: "ni ni-circle-08 text-pink",
-    component: <Register />,
-    layout: "/auth",
   },
   {
     path: "/vehicles",
@@ -77,6 +65,50 @@ var routes = [
     path: "/edit-vehicle/:id",
     name: "Izmena Vozila",
     component: <EditVehicle />,
+    layout: "/admin",
+  },
+
+  // --- OSTALE RUTE (Profil, Auth, Default Argon) ---
+  {
+    path: "/user-profile",
+    name: "User Profile",
+    icon: "ni ni-single-02 text-yellow",
+    component: <Profile />,
+    layout: "/admin",
+  },
+  {
+    path: "/login",
+    name: "Login",
+    icon: "ni ni-key-25 text-info",
+    component: <Login />,
+    layout: "/auth",
+  },
+  {
+    path: "/register",
+    name: "Register",
+    icon: "ni ni-circle-08 text-pink",
+    component: <Register />,
+    layout: "/auth",
+  },
+  {
+    path: "/icons",
+    name: "Icons",
+    icon: "ni ni-planet text-blue",
+    component: <Icons />,
+    layout: "/admin",
+  },
+  {
+    path: "/maps",
+    name: "Maps",
+    icon: "ni ni-pin-3 text-orange",
+    component: <Maps />,
+    layout: "/admin",
+  },
+  {
+    path: "/tables",
+    name: "Tables",
+    icon: "ni ni-bullet-list-67 text-red",
+    component: <Tables />,
     layout: "/admin",
   },
 ];
